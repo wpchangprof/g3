@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>G3 進階單字拼寫大挑戰 🏆</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f7f3ff; /* 改用優雅的淡紫色，代表進階挑戰 */
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+        h1 {
+            color: #8e44ad; /* 紫色主題標題 */
+            margin-bottom: 10px;
+        }
+        .badge {
+            background-color: #9b59b6;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            display: inline-block;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        .progress {
+            font-size: 1.1rem;
+            color: #7f8c8d;
+            margin-bottom: 20px;
+        }
+        .word-card {
+            background-color: #fafafa;
+            border: 2px dashed #9b59b6;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+        button {
+            background-color: #9b59b6;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1.1rem;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #8e44ad;
+            transform: scale(1.05);
+        }
+        .audio-btn {
+            background-color: #e67e22;
+            font-size: 1.3rem;
+            padding: 15px 30px;
+        }
+        .audio-btn:hover {
+            background-color: #d35400;
+        }
+        input[type="text"] {
+            font-size: 1.3rem;
+            padding: 10px;
+            width: 80%;
+            max-width: 300px;
+            text-align: center;
+            border: 2px solid #bdc3c7;
+            border-radius: 5px;
+            margin-top: 20px;
+            margin-bottom: 15px;
+        }
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #9b59b6;
+        }
+        .result-message {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-top: 15px;
+            min-height: 30px;
+        }
+        .correct { color: #27ae60; }
+        .wrong { color: #c0392b; }
+        
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>G3 單字聽寫挑戰 📝</h1>
+    <div class="badge">⭐ Advanced Words 進階級 ⭐</div>
+    
+    <div id="start-screen">
+        <p>準備好迎接 10 道全新的「進階單字」挑戰了嗎？</p>
+        <button onclick="startGame()">開始挑戰！🚀</button>
+    </div>
+
+    <div id="game-screen" class="hidden">
+        <div class="progress" id="progress-text">第 1 / 10 題</div>
+        
+        <div class="word-card">
+            <button class="audio-btn" onclick="speakCurrentWord()">🔊 點我聽發音</button>
+            <br>
+            <input type="text" id="answer-input" placeholder="在這裡輸入單字..." autocomplete="off">
+            <br>
+            <button onclick="checkAnswer()">提交答案 ✔</button>
+            <button onclick="speakCurrentWord()">再聽一次 👂</button>
+        </div>
+        
+        <div id="feedback" class="result-message"></div>
+        <button id="next-btn" class="hidden" onclick="nextQuestion()">下一題 ➔</button>
+    </div>
+
+    <div id="result-screen" class="hidden">
+        <h2>🎉 進階挑戰完成！ 🎉</h2>
+        <p id="final-score" style="font-size: 1.5rem; font-weight: bold; color: #2c3e50;"></p>
+        <p id="evaluation-msg" style="font-size: 1.2rem; color: #16a085;"></p>
+        <button onclick="startGame()">再挑戰一次 🔄</button>
+    </div>
+</div>
+
+<script>
+    // 根據最新圖片提取的 Grade 3 Advanced Words (共 70 個單字)
+    const advancedWordBank = [
+        // DE
+        "amusement park", "museum", "pharmacy", "hair salon", "bookstore", 
+        "dictionary", "calculator", "magazine", "paintbrush", "scissors",
+        // RS 1-10
+        "cable", "environmental", "converted", "renewable", "windmill", 
+        "mainland", "lighthouse", "harbormaster", "secondhand", "candlelight",
+        // RS 11-21
+        "fisherman", "blueberry", "childhood", "hammerhead", "embarrassed", 
+        "proclamation", "pungent", "horsepower", "odoriferous", "cottage", 
+        "disappointment",
+        // RS (第二直欄)
+        "bachelor", "stalk", "scarlet", "grove", "ground", 
+        "swelled", "energy", "baffled", "upcoming", "fragrant", 
+        "footwear", "tingly", "waterproof",
+        // MA (Math)
+        "division", "quotient", "equation", "capacity", "remainder", 
+        "dividend", "subtract", "denominator", "milliliter", "circumference",
+        // IS
+        "cardinal", "intermediate", "emergency", "evacuation", "earthquake", 
+        "population", "industry", "immigrant", "referee", "passport", 
+        "language", "dialect", "universal", "bilingual", "traditional", 
+        "proximity"
+    ];
+
+    // 答對時的隨機鼓勵話語
+    const praiseWords = [
+        "🌟 太厲害了！進階單字也難不倒你！",
+        "🎉 答對了！你實力驚人喔！",
+        "👍 非常棒！拼寫完全正確！",
+        "❤️ 哇！這個字很難，你竟然會拼！",
+        "🚀 滿分前進中！做得太好了！"
+    ];
+
+    let currentQuestions = [];
+    let currentIndex = 0;
+    let score = 0;
+
+    function startGame() {
+        // 隨機洗牌並抽取 10 個進階單字
+        const shuffled = [...advancedWordBank].sort(() => 0.5 - Math.random());
+        currentQuestions = shuffled.slice(0, 10);
+        
+        currentIndex = 0;
+        score = 0;
+
+        document.getElementById('start-screen').classList.add('hidden');
+        document.getElementById('result-screen').classList.add('hidden');
+        document.getElementById('game-screen').classList.remove('hidden');
+        
+        showQuestion();
+    }
+
+    function showQuestion() {
+        document.getElementById('progress-text').innerText = `第 ${currentIndex + 1} / 10 題`;
+        document.getElementById('answer-input').value = "";
+        document.getElementById('answer-input').disabled = false;
+        document.getElementById('feedback').innerText = "";
+        document.getElementById('feedback').className = "result-message";
+        document.getElementById('next-btn').classList.add('hidden');
+        
+        setTimeout(speakCurrentWord, 300);
+        document.getElementById('answer-input').focus();
+    }
+
+    // 語音發音 (Web Speech API)
+    function speakCurrentWord() {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel(); // 停止當前聲音
+            
+            const word = currentQuestions[currentIndex];
+            const utterance = new SpeechSynthesisUtterance(word);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.8; // 進階字稍微再放慢一點點方便辨音
+            window.speechSynthesis.speak(utterance);
+        } else {
+            alert("抱歉，您的瀏覽器不支援語音功能，建議使用 Chrome 或 Edge 瀏覽器！");
+        }
+    }
+
+    function checkAnswer() {
+        const inputField = document.getElementById('answer-input');
+        const userAnswer = inputField.value.trim().toLowerCase();
+        const correctAnswer = currentQuestions[currentIndex].trim().toLowerCase();
+        const feedbackDiv = document.getElementById('feedback');
+
+        if (userAnswer === "") {
+            feedbackDiv.innerText = "⚠️ 請輸入單字後再提交喔！";
+            feedbackDiv.className = "result-message wrong";
+            return;
+        }
+
+        inputField.disabled = true;
+
+        if (userAnswer === correctAnswer) {
+            score++;
+            const randomPraise = praiseWords[Math.floor(Math.random() * praiseWords.length)];
+            feedbackDiv.innerText = randomPraise;
+            feedbackDiv.className = "result-message correct";
+        } else {
+            // 顯示正確答案
+            feedbackDiv.innerText = `❌ 再接再厲！正確答案是：${currentQuestions[currentIndex]}`;
+            feedbackDiv.className = "result-message wrong";
+        }
+
+        document.getElementById('next-btn').classList.remove('hidden');
+    }
+
+    function nextQuestion() {
+        currentIndex++;
+        if (currentIndex < 10) {
+            showQuestion();
+        } else {
+            showResult();
+        }
+    }
+
+    function showResult() {
+        document.getElementById('game-screen').classList.add('hidden');
+        document.getElementById('result-screen').classList.remove('hidden');
+        
+        const scoreText = document.getElementById('final-score');
+        const evalText = document.getElementById('evaluation-msg');
+        
+        scoreText.innerText = `答對題數：${score} / 10 題 (得分：${score * 10} 分)`;
+        
+        if (score === 10) {
+            evalText.innerText = "👑 太不可思議了！高難度挑戰滿分！你是最強單字王！👑";
+        } else if (score >= 8) {
+            evalText.innerText = "💎 卓越超群！這些高級單字你掌握得非常棒！";
+        } else if (score >= 5) {
+            evalText.innerText = "✨ 很好！進階單字很有難度，你已經表現得很棒了！";
+        } else {
+            evalText.innerText = "💪 沒關係！這些是進階單字，多聽幾次再挑戰，你一定能成功！";
+        }
+    }
+
+    // 支援 Enter 鍵送出或下一題
+    document.getElementById('answer-input').addEventListener('keypress', function(event) {
+        if (event.key === 'Enter') {
+            if (document.getElementById('next-btn').classList.contains('hidden')) {
+                checkAnswer();
+            } else {
+                nextQuestion();
+            }
+        }
+    });
+</script>
+
+</body>
+</html>
