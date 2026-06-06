@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文字檔匯入聽力連播大挑戰 🎧</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+        h1 {
+            color: #16a085;
+            margin-bottom: 10px;
+        }
+        .setup-group {
+            margin: 20px 0;
+            font-size: 1.1rem;
+            text-align: left;
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 5px solid #16a085;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 8px;
+            color: #34495e;
+        }
+        input[type="file"] {
+            font-size: 1rem;
+            margin-bottom: 5px;
+            width: 100%;
+        }
+        select {
+            font-size: 1.1rem;
+            padding: 6px 15px;
+            border-radius: 5px;
+            border: 2px solid #16a085;
+            cursor: pointer;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .word-count-hint {
+            font-size: 0.95rem;
+            color: #e67e22;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        .status-card {
+            background-color: #f9f9f9;
+            border: 2px dashed #16a085;
+            border-radius: 10px;
+            padding: 40px 20px;
+            margin: 20px 0;
+        }
+        .current-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .countdown {
+            font-size: 3.5rem;
+            font-weight: bold;
+            color: #e74c3c;
+            margin: 15px 0;
+        }
+        button {
+            background-color: #16a085;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.2rem;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #117a65;
+            transform: scale(1.02);
+        }
+        .next-immediately-btn {
+            background-color: #27ae60;
+            margin-bottom: 15px;
+        }
+        .next-immediately-btn:hover {
+            background-color: #219653;
+        }
+        .answer-sheet {
+            text-align: left;
+            margin-top: 25px;
+            padding: 20px;
+            background-color: #f4f6f7;
+            border-radius: 10px;
+        }
+        .answer-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            font-size: 1.2rem;
+            margin-top: 10px;
+        }
+        .answer-item {
+            padding: 5px;
+            border-bottom: 1px solid #ddd;
+        }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>檔案匯入聽力連播 🎧</h1>
+    <p style="color: #7f8c8d; margin-bottom: 20px;">載入單字文字檔，輕鬆舉辦隨機聽寫測驗</p>
+
+    <div id="setup-screen">
+        <div class="setup-group">
+            <label for="file-input">📂 1. 請選擇單字文字檔 (.txt)：</label>
+            <input type="file" id="file-input" accept=".txt" onchange="handleFileSelect()">
+            <div class="word-count-hint" id="count-display">ℹ️ 尚未載入檔案 (支援以 Enter 或逗號隔開的單字檔)</div>
+        </div>
+
+        <div class="setup-group">
+            <label for="time-select">⏱️ 2. 請選擇每題最多等待時間：</label>
+            <select id="time-select">
+                <option value="10">10 秒</option>
+                <option value="15" selected>15 秒</option>
+                <option value="20">20 秒</option>
+            </select>
+        </div>
+        <button id="start-btn" onclick="startListeningTest()" disabled style="background-color: #bdc3c7; cursor: not-allowed;">請先選擇單字檔 📁</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+        <div class="status-card">
+            <div class="current-number" id="quiz-progress">準備中...</div>
+            <div class="countdown" id="timer-display">--</div>
+            <p id="status-text">即將播放發音...</p>
+        </div>
+        
+        <button id="skip-wait-btn" class="next-immediately-btn" onclick="skipToNextQuestion()">寫好了，直接下一題 ➔</button>
+        <button id="stop-btn" style="background-color: #e74c3c;" onclick="stopTest()">緊急停止測驗 🛑</button>
+    </div>
+
+    <div id="result-screen" class="hidden">
+        <h2>🎉 聽寫測驗結束！ 🎉</h2>
+        <p>每題 10 分，總計 100 分。快拿出紅筆來對答案吧：</p>
+        
+        <div class="answer-sheet">
+            <h3>📝 正確答案卷：</h3>
+            <div class="answer-grid" id="answer-list">
+                </div>
+        </div>
+        
+        <br>
+        <button onclick="resetGame()">重新考一次 🔄</button>
+    </div>
+</div>
+
+<script>
+    let userWordBank = [];
+    let selectedWords = [];
+    let currentIndex = 0;
+    let intervalSeconds = 15;
+    let timerInterval = null;
+    let initialDelayTimeout = null;
+    let countdownValue = 0;
+
+    // 處理檔案選取與讀取
+    function handleFileSelect() {
+        const fileInput = document.getElementById('file-input');
+        if (fileInput.files.length === 0) return;
+
+        const file = fileInput.files[0];
+        const reader = new FileReader();
+
+        // 預設先用全球通用的 UTF-8 讀取
+        reader.onload = function(e) {
+            const text = e.target.result;
+            processText(text);
+        };
+        reader.readAsText(file, 'UTF-8');
+    }
+
+    // 解析文字內容
+    function processText(text) {
+        const startBtn = document.getElementById('start-btn');
+        const countDisplay = document.getElementById('count-display');
+
+        // 將文字依照 換行(\n, \r) 或是 逗號、分號 進行切割
+        userWordBank = text.split(/[\n\r,;，；]+/)
+                           .map(word => word.trim())
+                           .filter(word => word.length > 0);
+
+        // 【檢查點】如果發現第一個字看起來像亂碼或解析失敗，嘗試改用 Windows 常見的 Big5 重新讀取一次
+        if (userWordBank.length > 0 && /[\uFFFD]/.test(userWordBank[0])) {
+            const fileInput = document.getElementById('file-input');
+            const file = fileInput.files[0];
+            const retryReader = new FileReader();
+            retryReader.onload = function(e) {
+                const retryText = e.target.result;
+                userWordBank = retryText.split(/[\n\r,;，；]+/)
+                                       .map(word => word.trim())
+                                       .filter(word => word.length > 0);
+                renderStatus(countDisplay, startBtn);
+            };
+            retryReader.readAsText(file, 'Big5');
+        } else {
+            renderStatus(countDisplay, startBtn);
+        }
+    }
+
+    // 更新介面狀態
+    function renderStatus(countDisplay, startBtn) {
+        if (userWordBank.length >= 10) {
+            countDisplay.innerText = `✅ 成功載入！偵測到單字量：${userWordBank.length} 個。第一個單字為: "${userWordBank[0]}"`;
+            countDisplay.style.color = "#27ae60";
+            startBtn.disabled = false;
+            startBtn.style.backgroundColor = "#16a085";
+            startBtn.style.cursor = "pointer";
+            startBtn.innerText = "開始聽寫測驗（隨機抽 10 題） 🚀";
+        } else {
+            countDisplay.innerText = `❌ 讀取失敗或單字太少：目前僅偵測到 ${userWordBank.length} 個字 (必須至少 10 個字)。`;
+            countDisplay.style.color = "#c0392b";
+            startBtn.disabled = true;
+            startBtn.style.backgroundColor = "#bdc3c7";
+            startBtn.style.cursor = "not-allowed";
+            startBtn.innerText = "請先選擇正確的單字檔 📁";
+        }
+    }
+
+    // 電子提示音 (叮咚)
+    function playDingDong() {
+        if (!window.AudioContext && !window.webkitAudioContext) return;
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        const ctx = new AudioContext();
+        
+        const osc1 = ctx.createOscillator();
+        const gain1 = ctx.createGain();
+        osc1.type = 'sine';
+        osc1.frequency.setValueAtTime(880, ctx.currentTime);
+        gain1.gain.setValueAtTime(0.2, ctx.currentTime);
+        gain1.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+        osc1.connect(gain1);
+        gain1.connect(ctx.destination);
+        osc1.start();
+        osc1.stop(ctx.currentTime + 0.3);
+
+        setTimeout(() => {
+            const osc2 = ctx.createOscillator();
+            const gain2 = ctx.createGain();
+            osc2.type = 'sine';
+            osc2.frequency.setValueAtTime(698.46, ctx.currentTime);
+            gain2.gain.setValueAtTime(0.2, ctx.currentTime);
+            gain2.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+            osc2.connect(gain2);
+            gain2.connect(ctx.destination);
+            osc2.start();
+            osc2.stop(ctx.currentTime + 0.5);
+        }, 120);
+    }
+
+    function startListeningTest() {
+        intervalSeconds = parseInt(document.getElementById('time-select').value);
+        
+        // 隨機抽 10 題
+        const shuffled = [...userWordBank].sort(() => 0.5 - Math.random());
+        selectedWords = shuffled.slice(0, 10);
+        
+        currentIndex = 0;
+
+        document.getElementById('setup-screen').classList.add('hidden');
+        document.getElementById('quiz-screen').classList.remove('hidden');
+        
+        runQuestion();
+    }
+
+    function runQuestion() {
+        if (currentIndex >= 10) {
+            endTest();
+            return;
+        }
+
+        clearInterval(timerInterval);
+        clearTimeout(initialDelayTimeout);
+
+        document.getElementById('quiz-progress').innerText = `第 ${currentIndex + 1} / 10 題`;
+        document.getElementById('status-text').innerText = "🔊 正在發音...";
+        document.getElementById('timer-display').innerText = intervalSeconds;
+        
+        speakWord(selectedWords[currentIndex]);
+
+        countdownValue = intervalSeconds;
+        
+        initialDelayTimeout = setTimeout(() => {
+            playDingDong(); 
+            document.getElementById('status-text').innerText = "✍️ 請在紙上寫下單字...";
+            
+            timerInterval = setInterval(() => {
+                countdownValue--;
+                document.getElementById('timer-display').innerText = countdownValue;
+                
+                if (countdownValue <= 0) {
+                    clearInterval(timerInterval);
+                    currentIndex++;
+                    runQuestion(); 
+                }
+            }, 1000);
+
+        }, 1800);
+    }
+
+    function skipToNextQuestion() {
+        window.speechSynthesis.cancel();
+        clearInterval(timerInterval);
+        clearTimeout(initialDelayTimeout);
+        currentIndex++;
+        runQuestion();
+    }
+
+    function speakWord(word) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(word);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.8;
+            window.speechSynthesis.speak(utterance);
+        }
+    }
+
+    function stopTest() {
+        clearInterval(timerInterval);
+        clearTimeout(initialDelayTimeout);
+        window.speechSynthesis.cancel();
+        resetGame();
+    }
+
+    function endTest() {
+        clearInterval(timerInterval);
+        clearTimeout(initialDelayTimeout);
+        document.getElementById('quiz-screen').classList.add('hidden');
+        document.getElementById('result-screen').classList.remove('hidden');
+
+        const answerListDiv = document.getElementById('answer-list');
+        answerListDiv.innerHTML = "";
+        
+        selectedWords.forEach((word, index) => {
+            const item = document.createElement('div');
+            item.className = "answer-item";
+            item.innerHTML = `<strong>(${index + 1})</strong> ${word}`;
+            answerListDiv.appendChild(item);
+        });
+    }
+
+    function resetGame() {
+        document.getElementById('result-screen').classList.add('hidden');
+        document.getElementById('quiz-screen').classList.add('hidden');
+        document.getElementById('setup-screen').classList.remove('hidden');
+        
+        // 重新整理目前的檔案
+        const fileInput = document.getElementById('file-input');
+        if (fileInput.files.length > 0) {
+            handleFileSelect();
+        }
+    }
+</script>
+
+</body>
+</html>
