@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>G3 單字與聽力學習大本營 🎯</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
+            color: #2c3e50;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .container {
+            background-color: white;
+            padding: 40px 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 5px;
+            font-size: 2.2rem;
+        }
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+            margin-bottom: 35px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px;
+            margin-bottom: 20px;
+        }
+        .card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 15px;
+            padding: 30px 20px;
+            text-align: center;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 20px rgba(0,0,0,0.1);
+        }
+        /* 各別卡片的風格配色 */
+        .card-rs1:hover {
+            border-color: #3498db;
+            background-color: #f2f9ff;
+        }
+        .card-rs2:hover {
+            border-color: #9b59b6;
+            background-color: #faf5ff;
+        }
+        .card-listen:hover {
+            border-color: #16a085;
+            background-color: #f2fbf9;
+        }
+        .icon {
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+        }
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .card-desc {
+            font-size: 0.95rem;
+            color: #7f8c8d;
+            line-height: 1.5;
+        }
+        .card-rs1 .card-title { color: #2980b9; }
+        .card-rs2 .card-title { color: #8e44ad; }
+        .card-listen .card-title { color: #117a65; }
+        
+        footer {
+            margin-top: 40px;
+            font-size: 0.9rem;
+            color: #bdc3c7;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>G3 Spelling Bee 學習大本營 🎯</h1>
+    <div class="subtitle">小朋友，今天想要挑戰哪一個練習呢？選一個好玩的模式開始吧！</div>
+
+    <div class="grid">
+        <a href="rs1.html" class="card card-rs1">
+            <div>
+                <div class="icon">📝</div>
+                <div class="card-title">基礎單字挑戰</div>
+                <div class="card-desc">包含 130 個日常與學科基礎單字，打好英文核心基本功！</div>
+            </div>
+        </a>
+
+        <a href="rs2.html" class="card card-rs2">
+            <div>
+                <div class="icon">🏆</div>
+                <div class="card-title">進階單字挑戰</div>
+                <div class="card-desc">包含 70 個高難度挑戰單字，向完美滿分與神人級邁進！</div>
+            </div>
+        </a>
+
+        <a href="custom_listen.html" class="card card-listen">
+            <div>
+                <div class="icon">🎧</div>
+                <div class="card-title">隨機聽寫連播</div>
+                <div class="card-desc">匯入文字檔進行 10 題隨機大普考，拿出紙筆測試真正的聽力實力！</div>
+            </div>
+        </a>
+    </div>
+
+    <footer>Grade 3 Vocabulary & Listening Hub © 2026</footer>
+</div>
+
+</body>
+</html>
