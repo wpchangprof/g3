@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>G3 單字與聽力學習大本營 </title>
+    <title>G3 單字與聽力學習大本營 🎯</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -23,7 +23,7 @@
             padding: 40px 30px;
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            max-width: 800px;
+            max-width: 900px;
             width: 100%;
             text-align: center;
         }
@@ -39,7 +39,7 @@
         }
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 25px;
             margin-bottom: 20px;
         }
@@ -47,7 +47,7 @@
             background: white;
             border: 2px solid #e2e8f0;
             border-radius: 15px;
-            padding: 30px 20px;
+            padding: 35px 20px;
             text-align: center;
             text-decoration: none;
             color: inherit;
@@ -62,36 +62,43 @@
             transform: translateY(-8px);
             box-shadow: 0 12px 20px rgba(0,0,0,0.1);
         }
-        /* 各別卡片的風格配色 */
-        .card-rs1:hover {
-            border-color: #3498db;
-            background-color: #f2f9ff;
+        
+        /* 向量圖示 SVG 樣式 */
+        .icon-wrapper {
+            width: 70px;
+            height: 70px;
+            margin-bottom: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
         }
-        .card-rs2:hover {
-            border-color: #9b59b6;
-            background-color: #faf5ff;
-        }
-        .card-listen:hover {
-            border-color: #16a085;
-            background-color: #f2fbf9;
-        }
-        .icon {
-            font-size: 3.5rem;
-            margin-bottom: 15px;
-        }
+        
+        /* 基礎單字卡風格 */
+        .card-rs1 .icon-wrapper { background-color: #e1f5fe; color: #0288d1; }
+        .card-rs1:hover { border-color: #3498db; background-color: #f2f9ff; }
+        .card-rs1 .card-title { color: #2980b9; }
+
+        /* 進階單字卡風格 */
+        .card-rs2 .icon-wrapper { background-color: #f3e5f5; color: #7b1fa2; }
+        .card-rs2:hover { border-color: #9b59b6; background-color: #faf5ff; }
+        .card-rs2 .card-title { color: #8e44ad; }
+
+        /* 聽力測驗卡風格 */
+        .card-listen .icon-wrapper { background-color: #e0f2f1; color: #00796b; }
+        .card-listen:hover { border-color: #16a085; background-color: #f2fbf9; }
+        .card-listen .card-title { color: #117a65; }
+
         .card-title {
-            font-size: 1.3rem;
+            font-size: 1.4rem;
             font-weight: bold;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
         .card-desc {
             font-size: 0.95rem;
             color: #7f8c8d;
-            line-height: 1.5;
+            line-height: 1.6;
         }
-        .card-rs1 .card-title { color: #2980b9; }
-        .card-rs2 .card-title { color: #8e44ad; }
-        .card-listen .card-title { color: #117a65; }
         
         footer {
             margin-top: 40px;
@@ -103,13 +110,15 @@
 <body>
 
 <div class="container">
-    <h1>G3 Spelling Bee 學習大本營</h1>
+    <h1>G3 Spelling Bee 學習大本營 🎯</h1>
     <div class="subtitle">小朋友，今天想要挑戰哪一個練習呢？選一個好玩的模式開始吧！</div>
 
     <div class="grid">
         <a href="rs1.html" class="card card-rs1">
             <div>
-                <div class="icon">??</div>
+                <div class="icon-wrapper">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                </div>
                 <div class="card-title">基礎單字挑戰</div>
                 <div class="card-desc">包含 130 個日常與學科基礎單字，打好英文核心基本功！</div>
             </div>
@@ -117,7 +126,9 @@
 
         <a href="rs2.html" class="card card-rs2">
             <div>
-                <div class="icon">??</div>
+                <div class="icon-wrapper">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path><path d="M4 22h16"></path><path d="M10 14.66V17c0 .55-.45 1-1 1H4v2h16v-2h-5c-.55 0-1-.45-1-1v-2.34"></path><path d="M12 2a6 6 0 0 1 6 6v5a6 6 0 0 1-6 6 6 6 0 0 1-6-6V8a6 6 0 0 1 6-6z"></path></svg>
+                </div>
                 <div class="card-title">進階單字挑戰</div>
                 <div class="card-desc">包含 70 個高難度挑戰單字，向完美滿分與神人級邁進！</div>
             </div>
@@ -125,14 +136,16 @@
 
         <a href="custom_listen.html" class="card card-listen">
             <div>
-                <div class="icon">??</div>
+                <div class="icon-wrapper">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path></svg>
+                </div>
                 <div class="card-title">隨機聽寫連播</div>
                 <div class="card-desc">匯入文字檔進行 10 題隨機大普考，拿出紙筆測試真正的聽力實力！</div>
             </div>
         </a>
     </div>
 
-    <footer>Grade 3 Vocabulary & Listening Hub c 2026</footer>
+    <footer>Grade 3 Vocabulary & Listening Hub © 2026</footer>
 </div>
 
 </body>
